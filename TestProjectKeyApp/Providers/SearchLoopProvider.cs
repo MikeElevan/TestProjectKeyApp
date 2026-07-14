@@ -20,9 +20,9 @@ public class SearchLoopProvider : ISearchLoopProvider
         _searchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
     }
 
-    public async Task RunAsync(CancellationToken cancellationToken = default)
+    public async Task RunAsync()
     {
-        while (!cancellationToken.IsCancellationRequested)
+        while (true)
         {
             string keyword = _inputProvider.ReadLine(AppConstants.EnterKeywordPrompt).Trim();
 
@@ -48,7 +48,7 @@ public class SearchLoopProvider : ISearchLoopProvider
 
             try
             {
-                IReadOnlyList<string> results = await _searchService.SearchAsync(keyword, country).WaitAsync(cancellationToken);
+                IReadOnlyList<string> results = await _searchService.SearchAsync(keyword, country);
                 _outputProvider.WriteLine(string.Join(Environment.NewLine, results));
             }
             catch (OperationCanceledException)

@@ -20,19 +20,10 @@ internal static class Program
             var services = new ServiceCollection();
             ConfigureServices(services);
 
-            using (var cts = new CancellationTokenSource())
+            await using (var serviceProvider = services.BuildServiceProvider())
             {
-                Console.CancelKeyPress += (_, e) =>
-                {
-                    e.Cancel = true;
-                    cts.Cancel();
-                };
-
-                await using (var serviceProvider = services.BuildServiceProvider())
-                {
-                    var searchLoopProvider = serviceProvider.GetRequiredService<SearchLoopProvider>();
-                    await searchLoopProvider.RunAsync(cts.Token);
-                }
+                var searchLoopProvider = serviceProvider.GetRequiredService<SearchLoopProvider>();
+                await searchLoopProvider.RunAsync();
             }
         }
         catch (Exception ex)
