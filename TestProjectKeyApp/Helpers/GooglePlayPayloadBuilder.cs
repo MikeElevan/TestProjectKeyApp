@@ -18,6 +18,8 @@ namespace TestProjectKeyApp.Helpers
         private const int FirstFilter = 2;
         private const int SecondFilter = 1;
 
+        private static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = false };
+
         /// <summary>
         /// Builds a complete RPC payload JSON string for Google Play search.
         /// </summary>
@@ -55,7 +57,7 @@ namespace TestProjectKeyApp.Helpers
                 }
             };
 
-            return JsonSerializer.Serialize(rpcPayload, new JsonSerializerOptions { WriteIndented = false });
+            return JsonSerializer.Serialize(rpcPayload, SerializerOptions);
         }
 
         /// <summary>

@@ -19,10 +19,13 @@ namespace TestProjectKeyApp.Helpers
             ArgumentException.ThrowIfNullOrWhiteSpace(searchTerm, nameof(searchTerm));
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(resultLimit, nameof(resultLimit));
 
-            var requestParams = appSettingsModel.RequestParams ?? new RequestParamsModel();
+            GooglePlaySearchQueryParams queryParams = appSettingsModel.RequestParams ?? new GooglePlaySearchQueryParams();
 
-            var queryParams = LoadQueryParams(requestParams);
-            var bodyParams = LoadBodyParams(searchTerm, resultLimit, requestParams);
+            var bodyParams = new GooglePlaySearchBodyParams
+            {
+                FReq = GooglePlayPayloadBuilder.BuildSearchPayload(searchTerm, resultLimit),
+                At = queryParams.At
+            };
 
             return new GooglePlaySearchRequest
             {
@@ -30,52 +33,5 @@ namespace TestProjectKeyApp.Helpers
                 Body = bodyParams
             };
         }
-
-        /// <summary>
-        /// Loads query parameters from RequestParams section in appsettings.json.
-        /// </summary>
-        /// <param name="requestParams">The request parameters model</param>
-        /// <returns>Configured query parameters</returns>
-        private static GooglePlaySearchQueryParams LoadQueryParams(RequestParamsModel requestParams)
-        {
-            return new GooglePlaySearchQueryParams
-            {
-                Rpcids = requestParams.Rpcids ?? string.Empty,
-                SourcePath = requestParams.SourcePath ?? string.Empty,
-                Bl = requestParams.Bl ?? string.Empty,
-                Hl = requestParams.Hl ?? string.Empty,
-                Gl = requestParams.Gl ?? string.Empty,
-                AuthUser = requestParams.AuthUser ?? string.Empty,
-                SocApp = requestParams.SocApp ?? string.Empty,
-                SocPlatform = requestParams.SocPlatform ?? string.Empty,
-                SocDevice = requestParams.SocDevice ?? string.Empty,
-                ReqId = requestParams.ReqId ?? string.Empty,
-                Rt = requestParams.Rt ?? string.Empty,
-                FSid = requestParams.FSid ?? string.Empty
-            };
-        }
-
-        /// <summary>
-        /// Loads body parameters from RequestParams section and builds RPC payload for the given search term.
-        /// </summary>
-        /// <param name="requestParams">The request parameters model</param>
-        /// <param name="searchTerm">The search query term</param>
-        /// <param name="resultLimit">Maximum number of results</param>
-        /// <returns>Configured body parameters</returns>
-        private static GooglePlaySearchBodyParams LoadBodyParams(string searchTerm, int resultLimit, RequestParamsModel? requestParams)
-        {
-            requestParams = requestParams ?? new RequestParamsModel();
-
-            // Build RPC payload JSON string
-            string fReqPayload = GooglePlayPayloadBuilder.BuildSearchPayload(searchTerm, resultLimit);
-
-            return new GooglePlaySearchBodyParams
-            {
-                FReq = fReqPayload,
-                At = requestParams.At ?? string.Empty
-            };
-        }
     }
-
-
 }

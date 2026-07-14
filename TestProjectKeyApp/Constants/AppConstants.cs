@@ -4,9 +4,10 @@ public static class AppConstants
 {
     public const string AppSettingsFileName = "appsettings.json";
 
-    public const string EnterKeywordPrompt = "Enter keyword: ";
+    public const string EnterKeywordPrompt = "Enter keyword (or 'exit' to quit): ";
     public const string EnterCountryPrompt = "Enter country: ";
     public const string EmptyKeywordOrCountryMessage = "Keyword and country must not be empty.";
+    public const string ExitMessage = "Goodbye!";
     public const string ErrorPrefix = "Error: ";
     public const string ErrorMessage = "Error: {0}. Attempt {1}/{2}.";
     public const string SettingsConfigurationSection = "Settings";

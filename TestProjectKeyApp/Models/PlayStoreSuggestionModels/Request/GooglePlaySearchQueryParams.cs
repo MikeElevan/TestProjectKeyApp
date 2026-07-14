@@ -39,6 +39,12 @@ namespace TestProjectKeyApp.Models.PlayStoreSuggestionModels.Request
 
         [JsonPropertyName("f.sid")]
         public string FSid { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Anti-CSRF / session auth token, config-only — belongs in the request body, not the querystring.
+        /// </summary>
+        [JsonIgnore]
+        public string At { get; set; } = string.Empty;
     }
 
 }

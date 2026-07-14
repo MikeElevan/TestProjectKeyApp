@@ -1,3 +1,5 @@
+using TestProjectKeyApp.Models.PlayStoreSuggestionModels.Request;
+
 namespace TestProjectKeyApp.Models
 {
     public class AppSettingsModel
@@ -7,6 +9,6 @@ namespace TestProjectKeyApp.Models
         public int MaxRetries { get; set; } = 3;
         public int RetryDelayMilliseconds { get; set; } = 1000;
         public string BaseUrl { get; set; } = "https://play.google.com/_/PlayStoreUi/data/batchexecute";
-        public RequestParamsModel RequestParams { get; set; } = new RequestParamsModel();
+        public GooglePlaySearchQueryParams RequestParams { get; set; } = new GooglePlaySearchQueryParams();
     }
 }

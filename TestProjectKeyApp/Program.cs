@@ -20,10 +20,17 @@ internal static class Program
             var services = new ServiceCollection();
             ConfigureServices(services);
 
-            await using( var serviceProvider = services.BuildServiceProvider())
+            using var cts = new CancellationTokenSource();
+            Console.CancelKeyPress += (_, e) =>
+            {
+                e.Cancel = true; // prevent immediate process termination; let the loop unwind gracefully
+                cts.Cancel();
+            };
+
+            await using (var serviceProvider = services.BuildServiceProvider())
             {
                 var searchLoopProvider = serviceProvider.GetRequiredService<SearchLoopProvider>();
-                await searchLoopProvider.RunAsync();
+                await searchLoopProvider.RunAsync(cts.Token);
             }
         }
         catch (Exception ex)
@@ -41,12 +48,10 @@ internal static class Program
 
         services.AddSingleton<IAppSettingsProvider, AppSettingsProvider>();
 
-        var tempProvider = new AppSettingsProvider(configuration);
-        var appSettings = tempProvider.LoadAppSettings();
-
-        services.AddHttpClient<IAppSearchService, AppSearchService>(client =>
+        services.AddHttpClient<IAppSearchService, AppSearchService>((serviceProvider, client) =>
         {
-            client.Timeout = TimeSpan.FromSeconds(appSettings.TimeoutSeconds);
+            var settings = serviceProvider.GetRequiredService<IAppSettingsProvider>().LoadAppSettings();
+            client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
         });
 
         services.AddSingleton<IOutputProvider, ConsoleOutputWriter>();

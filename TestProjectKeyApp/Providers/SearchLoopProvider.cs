@@ -20,12 +20,25 @@ public class SearchLoopProvider : ISearchLoopProvider
         _searchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
     }
 
-    public async Task RunAsync()
+    public async Task RunAsync(CancellationToken cancellationToken = default)
     {
-        while (true)
+        while (!cancellationToken.IsCancellationRequested)
         {
             string keyword = _inputProvider.ReadLine(AppConstants.EnterKeywordPrompt).Trim();
+
+            if (IsExitCommand(keyword))
+            {
+                _outputProvider.WriteLine(AppConstants.ExitMessage);
+                break;
+            }
+
             string country = _inputProvider.ReadLine(AppConstants.EnterCountryPrompt).Trim();
+
+            if (IsExitCommand(country))
+            {
+                _outputProvider.WriteLine(AppConstants.ExitMessage);
+                break;
+            }
 
             if (string.IsNullOrWhiteSpace(keyword) || string.IsNullOrWhiteSpace(country))
             {
@@ -35,8 +48,13 @@ public class SearchLoopProvider : ISearchLoopProvider
 
             try
             {
-                IReadOnlyList<string> results = await _searchService.SearchAsync(keyword, country);
+                IReadOnlyList<string> results = await _searchService.SearchAsync(keyword, country).WaitAsync(cancellationToken);
                 _outputProvider.WriteLine(string.Join(Environment.NewLine, results));
+            }
+            catch (OperationCanceledException)
+            {
+                _outputProvider.WriteLine(AppConstants.ExitMessage);
+                break;
             }
             catch (Exception ex)
             {
@@ -44,4 +62,8 @@ public class SearchLoopProvider : ISearchLoopProvider
             }
         }
     }
+
+    private static bool IsExitCommand(string input) =>
+        string.Equals(input, "exit", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(input, "quit", StringComparison.OrdinalIgnoreCase);
 }

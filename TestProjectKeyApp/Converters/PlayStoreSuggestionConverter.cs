@@ -9,7 +9,7 @@ namespace TestProjectKeyApp.Converters
     {
         
         private const int HintTextPosition = 0;
-        private const int ResponeDataPosition = 0;
+        private const int ResponseDataPosition = 0;
         private const int ArrayWithHintsPosition = 2;
         private const int HintsPosition = 0;
         private const int HintSearchUrlPosition = 2;
@@ -34,7 +34,7 @@ namespace TestProjectKeyApp.Converters
                 }
 
                 // The first element of the array contains the response data (index 0)
-                var batchResponse = root[ResponeDataPosition];
+                var batchResponse = root[ResponseDataPosition];
                 if (batchResponse.ValueKind != JsonValueKind.Array || batchResponse.GetArrayLength() < 3)
                 {
                     return result;
